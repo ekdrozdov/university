@@ -1,0 +1,2 @@
+l3.for: *WRN* VA-05 in FMAIN, R_HEAP is an unreferenced symbol
+l3.for: *ERR* SV-02 in FMAIN, adjustable/assumed size array R_HEAP must be a dummy argument

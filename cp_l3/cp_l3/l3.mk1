@@ -1,0 +1,22 @@
+!define BLANK ""
+C:\Users\drozdov.2015\Documents\cp_l3\l3.obj : C:\Users\drozdov.2015\Documen&
+ts\cp_l3\l3.for .AUTODEPEND
+ @C:
+ cd C:\Users\drozdov.2015\Documents\cp_l3
+ wfc386 l3.for -d2 -q -dep
+
+C:\Users\drozdov.2015\Documents\cp_l3\l3.exe : C:\Users\drozdov.2015\Documen&
+ts\cp_l3\l3.obj .AUTODEPEND
+ @C:
+ cd C:\Users\drozdov.2015\Documents\cp_l3
+ @%write l3.lk1 FIL l3.obj
+ @%append l3.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b l3.imp 
+ @%append l3.lk1 LIBR l3.imp
+!endif
+!ifneq BLANK ""
+ @%append l3.lk1 
+!endif
+ *wlink name l3 d all sys nt op m op maxe=25 op q op symf @l3.lk1
+
