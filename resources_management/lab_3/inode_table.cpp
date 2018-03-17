@@ -26,9 +26,10 @@ void InodeTable::finit() {
 
 int InodeTable::search(char* filename) {
 	int foundIndex = 0;
+	char* temp = records[0].filename;
 
 	while ((foundIndex < totalSize) && 
-			(records[foundIndex].filename != filename)) {
+			(strcmp(records[foundIndex].filename, filename)) == 0) {
 		++foundIndex;
 	}
 	if (foundIndex < totalSize) {

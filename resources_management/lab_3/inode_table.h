@@ -1,6 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 
 const int FNAME_LEN = 16;
 
