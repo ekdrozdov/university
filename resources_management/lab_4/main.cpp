@@ -6,17 +6,21 @@
 
 double f(double x);
 void exp(double x, FILE* pFile);
-double ln(double x, FILE* pFile);
+double ln(double x);
 void pi(double x, FILE* pFile);
 
 int main(int argc, char** argv) {
 	int pid = getpid();
 	printf("main pid: %d\n", pid);
 	FILE* pFile = fopen("temp", "w");
-	fpos_t* startPos;
-	fgetpos(pFile, startPos);
+	FILE* p2File = fopen("temp", "r");
 
-	double x = 3.0;
+	double x = 0.0;
+	scanf("%lf", &x);
+	if (x <= 0.0) {
+		printf("Error: Argument should be positive number\n");
+		return 0;
+	}
 
 	int expPid = fork();
 	if (expPid == 0) {
@@ -27,17 +31,31 @@ int main(int argc, char** argv) {
 		pi(x, pFile);
 	}
 
-	int isFileFormed = 0;
-	while(!isFileFormed) {
-		// Test if the file is ready.
-		//exec("");
-		if (pFile != 
+	int entriesReaded = 0;
+	int readedPid = 0;
+	double readedData = 0.0;
+	double _exp = 0;
+	double _pi = 0;
+
+	while(entriesReaded != 2) {
+		fscanf(p2File, "%d%lf", &readedPid, &readedData);
+		if (readedPid != 0) {
+			entriesReaded++;
+			printf("pid: %d\n", readedPid);
+			if (readedPid == expPid) {
+				_exp = readedData;
+			}
+			else {
+				_pi = readedData;
+			}
+			readedPid = 0;
+		}
 	}
 	fclose(pFile);
+	fclose(p2File);
 
-	double _exp;
-	double _pi;
 	double f = _exp / (x * sqrt(2.0 * _pi));
+	printf("Result: %lf\n", f);
 
 	return 0;
 }
@@ -54,12 +72,9 @@ double f(double x) {
 
 void exp(double x, FILE* pFile) {
 	int pid = getpid();
-	printf("hi %d\n", pid);
-	double exp = 15.0;
+	printf("Process %d is running\n", pid);
 
-	fprintf(pFile, "%d\n", pid);
-	_exit(1);
-
+	// Computation.
 	double xExp = 1.0;
 	int factorial = 1;
 	double e = 0.0;
@@ -73,10 +88,40 @@ void exp(double x, FILE* pFile) {
 		xExp *= x;
 		factorial *= i;
 	}
-//	return e;
+
+	fprintf(pFile, "%d %lf\n", pid, e);
+	fclose(pFile);
+	printf("Process %d finished\n", pid);
+	_exit(1);
 }
 
-double ln(double x, FILE* pFile) {
+void pi(double x, FILE* pFile) {
+	int pid = getpid();
+	printf("Process %d is running\n", pid);
+
+	// Computation.
+	double c1 = (double)sqrt(12);
+	double c2 = -1.0/ 3.0;
+	double sum = 0;
+	double c2Exp = 1;
+
+	// After 40 iterations method reaching max
+	// precision due to machine arithmetic error.
+	int nIterations = 40;
+	for (int i = 0; i < nIterations; ++i) {
+		sum += c2Exp / (2 * i + 1);
+		c2Exp *= c2;
+	}
+
+	double result = c1 * sum;
+	
+	fprintf(pFile, "%d %lf\n", pid, result);
+	fclose(pFile);
+	printf("Process %d finished\n", pid);
+	_exit(1);
+}
+
+double ln(double x) {
 	double y = (x - 1.0) / (1.0 + x);
 	int c1 = 1;
 	double yExp = 1;
@@ -93,26 +138,4 @@ double ln(double x, FILE* pFile) {
 	}
 
 	return 2.0 * y * sum;
-}
-
-void pi(double x, FILE* pFile) {
-	int pid = getpid();
-	printf("hi %d\n", pid);
-	fprintf(pFile, "%d\n", 15);
-	_exit(1);
-
-	double c1 = (double)sqrt(12);
-	double c2 = -1.0/ 3.0;
-	double sum = 0;
-	double c2Exp = 1;
-
-	// After 40 iterations method reaching max
-	// precision due to machine arithmetic error.
-	int nIterations = 40;
-	for (int i = 0; i < nIterations; ++i) {
-		sum += c2Exp / (2 * i + 1);
-		c2Exp *= c2;
-	}
-
-	//return c1 * sum;
 }
