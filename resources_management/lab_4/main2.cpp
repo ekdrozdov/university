@@ -18,30 +18,35 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-	int ch[2];
-	pipe(ch);
+	int fdPi[2];
+	pipe(fdPi);
+	
 	int piPid = fork();
 	if (piPid == 0) {
+		dup2(fdPi[1], 1);
 		execl("./pi.exe", "pi.exe");
 	}
+
+	int fdExp[2];
+	pipe(fdExp);
+	write(fdExp[1], &x, sizeof(x));
+
 	int expPid = fork();
 	if (expPid == 0) {
+		dup2(fdExp[0], 0);
+		dup2(fdExp[1], 1);
 		execl("./exp.exe", "exp.exe");
 	}
 	
-	int expCh[2];
-	int piCh[2];
-	pipe(expCh);
-	pipe(piCh);
 	sleep(1);
 	kill(expPid, 1);
 	kill(piPid, 1);
+	sleep(1);
 
-	write(expCh[1], &x, sizeof(x));
 	double _exp = 0.0;
-	read(expCh[2], &_exp, sizeof(_exp));
+	read(fdExp[0], &_exp, sizeof(_exp));
 	double _pi = 0.0;
-	read(piCh[2], &_pi, sizeof(_pi));
+	read(fdPi[0], &_pi, sizeof(_pi));
 	
 	double f = _exp / (x * sqrt(2.0 * _pi));
 	printf("Result: %lf\n", f);
@@ -49,17 +54,6 @@ int main(int argc, char** argv) {
 	printf("MAIN process %d finished\n", pid);
 	return 0;
 }
-
-double f(double x) {
-	//double ln = ln(x);
-	//double exp;
-	if (x < 0) {
-		return 0.0;
-	}
-	return 0;
-	//return (1.0/2.0) * exp(-(1.0/2.0) * ln(x) * ln(x)) / (x * sqrt(2.0 * pi()));
-}
-
 
 double ln(double x) {
 	double y = (x - 1.0) / (1.0 + x);

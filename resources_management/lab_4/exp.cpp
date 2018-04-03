@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <signal.h>
 
+#include <string>
+
 /*
 typedef void (*sighandler_t)(int);
 
@@ -15,17 +17,13 @@ void handler(int sig) {
 	printf("sig is caugth\n");
 }
 
-int main() {
+int main(int argc, char** argv) {
 	signal(1, handler);
-	int ch[2];
-	pipe(ch);
 	double x = 0.0;
-	read(ch[2], &x, sizeof(x));
+	read(0, &x, sizeof(x));
 
 	int pid = getpid();
-	printf("Process %d is running\n", pid);
 	pause();
-	printf("Process %d woke up\n", pid);
 
 	// Computation.
 	double xExp = 1.0;
@@ -42,9 +40,8 @@ int main() {
 		factorial *= i;
 	}
 
-	write(ch[1], &e, sizeof(e));
+	write(1, &e, sizeof(e));
 
-	printf("Process %d finished\n", pid);
 	pause();
 	_exit(1);
 }

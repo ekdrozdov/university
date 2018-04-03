@@ -3,16 +3,16 @@
 #include <stdio.h>
 #include <signal.h>
 
+#include <string>
+
 void handler(int sig) {
 	printf("sig is caugth\n");
 }
 
-int main() {
+int main(int argc, char** argv) {
 	signal(1, handler);
 	int pid = getpid();
-	printf("Process %d is running\n", pid);
 	pause();
-	printf("Process %d woke up\n", pid);
 
 	// Computation.
 	double c1 = (double)sqrt(12);
@@ -29,11 +29,8 @@ int main() {
 	}
 
 	double result = c1 * sum;
-	int ch[2];
-	pipe(ch);
-	write(ch[1], &result, sizeof(result));
+	write(1, &result, sizeof(result));
 	
-	printf("Process %d finished\n", pid);
 	pause();
 	return 0;
 	_exit(1);
