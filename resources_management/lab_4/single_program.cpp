@@ -44,9 +44,11 @@ int main(int argc, char** argv) {
 			printf("pid: %d\n", readedPid);
 			if (readedPid == expPid) {
 				_exp = readedData;
+				printf("exp = %lf\n", _exp);
 			}
 			else {
 				_pi = readedData;
+				printf("pi = %lf\n", _pi);
 			}
 			readedPid = 0;
 		}
@@ -137,5 +139,6 @@ double ln(double x) {
 		yExp *= y;
 	}
 
+	printf("ln = %lf\n", 2.0 * y * sum);
 	return 2.0 * y * sum;
 }

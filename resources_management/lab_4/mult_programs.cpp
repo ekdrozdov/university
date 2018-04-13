@@ -29,7 +29,8 @@ int main(int argc, char** argv) {
 
 	int fdExp[2];
 	pipe(fdExp);
-	write(fdExp[1], &x, sizeof(x));
+	double expArg = (-(ln(x) * ln(x)) / 2);
+	write(fdExp[1], &expArg, sizeof(x));
 
 	int expPid = fork();
 	if (expPid == 0) {
@@ -48,6 +49,8 @@ int main(int argc, char** argv) {
 	double _pi = 0.0;
 	read(fdPi[0], &_pi, sizeof(_pi));
 	
+	printf("exp = %lf\n", _exp);
+	printf("pi = %lf\n", _pi);
 	double f = _exp / (x * sqrt(2.0 * _pi));
 	printf("Result: %lf\n", f);
 
