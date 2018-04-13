@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
 //};
 
 //struct dirent { 
-//	ino_t d_ino; /* номер индексного дескриптора */ 
-//	char d_name[DIRSIZ]; /* имя файла */ 
+//	ino_t d_ino; /* inode number */ 
+//	char d_name[DIRSIZ]; /* file name */ 
 //}
 

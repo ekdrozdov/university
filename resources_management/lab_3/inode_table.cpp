@@ -47,11 +47,20 @@ int InodeTable::add(char* filename, int inodeNumber) {
 
 	int index = search(filename);
 	if (index != -1) {
+		printf("byehi\n");
+		printf("byehi\n");
+		printf("byehi\n");
+		printf("byehi\n");
 		records[index].counter++;
 		return index;
 	}
 	else {
-		records[currentSize].filename = filename;
+		strcpy(records[currentSize].filename, filename);
+		printf("hi\n");
+		printf("hi\n");
+		printf("hi\n");
+		printf("hi\n");
+		//records[currentSize].filename = filename;
 		records[currentSize].inodeNumber = inodeNumber;
 		records[currentSize].counter = 1;
 		currentSize++;
