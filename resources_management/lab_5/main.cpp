@@ -5,11 +5,6 @@
 #include <stdlib.h>
 #include <signal.h>
 
-typedef struct {
-	char pid[4];
-	char data[40];
-} Message;
-
 void p1(int fd1[2], int fd2[2]);
 void p2(int fd[2]);
 void handler(int sig);
@@ -53,7 +48,7 @@ int main() {
 	read(fd1[0], &message, sizeof(message));
 	printf("%d: Readed: %s: %s\n", myPid, pid, message);
 
-	printf("%d: Waiting for childs finished\n", myPid);
+	printf("%d: Waiting for childs to finish\n", myPid);
 	int wstatus;
 	wait(&wstatus);
 	printf("%d: Child terminated with status %d\n", myPid, wstatus);
