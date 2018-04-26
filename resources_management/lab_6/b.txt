@@ -1,23 +1,24 @@
   PID TTY          TIME CMD
- 9877 pts/0    00:00:00 bash
-12566 pts/0    00:00:00 sort
-12567 pts/0    00:00:00 sort
-12747 pts/0    00:00:00 sort
-12748 pts/0    00:00:00 sort
-12821 pts/0    00:00:00 sort
-12822 pts/0    00:00:00 sort
-12860 pts/0    00:00:00 sort
-12861 pts/0    00:00:00 sort
-12947 pts/0    00:00:00 sort
-12948 pts/0    00:00:00 sort
-13079 pts/0    00:00:00 sort
-13080 pts/0    00:00:00 sort
-14111 pts/0    00:00:00 sort
-14382 pts/0    00:00:00 sort
-14504 pts/0    00:00:00 sort
-14517 pts/0    00:00:00 sort
-14546 pts/0    00:00:00 sort
-14748 pts/0    00:00:00 sort
+ 8906 pts/1    00:00:00 bash
+ 9374 pts/1    00:00:00 sort
+ 9453 pts/1    00:00:00 sort
+ 9500 pts/1    00:00:00 sort
+ 9506 pts/1    00:00:00 sort
+ 9511 pts/1    00:00:00 sort
+ 9516 pts/1    00:00:00 sort
+ 9529 pts/1    00:00:00 sort
+ 9536 pts/1    00:00:00 sort
+ 9550 pts/1    00:00:00 sort
+ 9562 pts/1    00:00:00 sort
+ 9616 pts/1    00:00:00 sort
+ 9631 pts/1    00:00:00 sort
+ 9646 pts/1    00:00:00 sort
+ 9666 pts/1    00:00:00 sort
+ 9692 pts/1    00:00:00 sort
+10053 pts/1    00:00:00 sort
+10060 pts/1    00:00:00 a.out
+10062 pts/1    00:00:00 ps
+
 14814 pts/0    00:00:00 sort
 14850 pts/0    00:00:00 sort
 14872 pts/0    00:00:00 sort
