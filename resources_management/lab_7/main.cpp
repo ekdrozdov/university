@@ -10,7 +10,7 @@
  */
 
 const int MSGSZ = 128;
-const int TBLSZ = 100;
+const int TBLSZ = 10;
 
 typedef struct _msgbuf {
     long    mtype;
@@ -20,6 +20,7 @@ typedef struct _msgbuf {
 void printUsage(char* programName);
 int createChild(key_t key);
 void runChildProcess(key_t key);
+void printTable(int* pTable, int tableSize);
 
 int main(int argc, char** argv) {
 	if (argc < 2) {
@@ -27,6 +28,7 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 	int myPid = getpid();
+	printf("%d: Parent started\n", myPid);
 	int childsAmount = 0;
 	sscanf(argv[1], "%d", &childsAmount);
 
@@ -41,8 +43,11 @@ int main(int argc, char** argv) {
 	// Create table.
 	int table[TBLSZ];
 	for (int i = 0; i < TBLSZ; ++i) {
-		table[TBLSZ] = i * i;
+		table[i] = i * i;
 	}
+
+	printf("Table content:\n");
+	printTable(table, TBLSZ);
 
 	// Create K (declared as a 'childsAmount') processes.
 	int* childPids = new int[childsAmount];
@@ -50,30 +55,55 @@ int main(int argc, char** argv) {
 		childPids[i] = createChild(key);
 	}
 
-	Message message;
 	// Try to recieve a message.
-	if (msgrcv(msgqid, &message, MSGSZ, message.mtype, 0) < 0) {
-		perror("msgrcv");
-		exit(EXIT_FAILURE);
-	}
-	printf("%d: Recieved message: %s\n", myPid, message.mtext);
-
+	Message message;
+	printf("childs %d\n", childsAmount);
 	for (int i = 0; i < childsAmount; ++i) {
+		// Get message from queue.
+		printf("i =  %d\n", i);
 		if (msgrcv(msgqid, &message, MSGSZ, myPid, 0) < 0) {
 			perror("msgrcv");
 			exit(EXIT_FAILURE);
 		}
+		printf("%d: Recieved message: %s\n", myPid, message.mtext);
 
 		// Handle request specified in recieved message.
-		int oldVal = handler();
-		df
+		int destPid, strNumber, newVal;
+		sscanf(message.mtext, "%d%d%d", &destPid, &strNumber, &newVal);
+		int oldVal = table[strNumber];
+		table[strNumber] = newVal;
 
-		printf("%d: Recieved message: %s\n", myPid, message.mtext);
+		// Build a message with old value of the table element.
+		message.mtype = destPid;
+		if (sprintf(message.mtext, "%d", oldVal) < 0) {
+			perror("sprintf");
+			_exit(EXIT_FAILURE);
+		}
+
+		// Feedback to childs.
+		if (msgsnd(msgqid, &message, MSGSZ, IPC_NOWAIT) < 0) {
+			perror("msgsnd");
+			_exit(EXIT_FAILURE);
+		}
 	}
 
+	printf("Table content:\n");
+	printTable(table, TBLSZ);
+
+	// Waiting for childs to finish.
+	for (int i = 0; i < childsAmount; ++i) {
+		wait(NULL);
+	}
 	msgctl(msgqid, IPC_RMID, NULL);
+	printf("%d: Parent finished\n", myPid);
 
 	return EXIT_SUCCESS;
+}
+
+void printTable(int* pTable, int tableSize) {
+	for (int i = 0; i < tableSize; ++i) {
+		printf("%d\n", pTable[i]);
+	}
 }
 
 int createChild(key_t key) {
@@ -91,7 +121,7 @@ int createChild(key_t key) {
 
 void runChildProcess(key_t key) {
 	int myPid = getpid();
-	printf("%d: start\n", myPid);
+	printf("%d: Child started\n", myPid);
 
 	// Try to access message queue.
 	int msgqid = msgget(key, 0666);
@@ -100,10 +130,11 @@ void runChildProcess(key_t key) {
 		_exit(EXIT_FAILURE);
 	}
 
-	// Create a message.
+	// Build a message.
 	Message message;
-	message.mtype = 1;
-	if (sprintf(message.mtext, "i'm %d", myPid) < 0) {
+	message.mtype = getppid();
+	if (sprintf(message.mtext, "%d %d %d", 
+				myPid, myPid % TBLSZ, myPid) < 0) {
 		perror("sprintf");
 		_exit(EXIT_FAILURE);
 	}
@@ -116,11 +147,15 @@ void runChildProcess(key_t key) {
 
 	printf("%d: Passed message: %s\n", myPid, message.mtext);
 
+	// Try to recieve message with an old value.
+	message.mtype = myPid;
 	if (msgrcv(msgqid, &message, MSGSZ, message.mtype, 0) < 0) {
 		perror("msgrcv");
 		exit(EXIT_FAILURE);
 	}
-	printf("%d: Recieved message: %s\n", myPid, message.mtext);
+	printf("%d: Recieved message (old value): %s\n", myPid, message.mtext);
+	printf("%d: Child finished\n", myPid);
+	_exit(EXIT_SUCCESS);
 }
 
 void printUsage(char* programName) {
