@@ -1,0 +1,35 @@
+.386
+.MODEL FLAT
+EXTERN _NEWSTR:DWORD
+
+.DATA
+LEN DD ?
+SRC DD ?
+
+.CODE
+@REPSTR@12 PROC
+	PUSH EBP
+	MOV EBP, ESP
+	XOR EAX, EAX
+	MOV AX, [EBP] + 8
+	MOV LEN, EAX
+	MOV SRC, EDX
+	; EAX -- DEST ADDRESS
+	MOV EAX, OFFSET _NEWSTR 
+	; ECX already contain a number of desired inserts
+	CONT:
+		PUSH ECX
+		MOV ECX, LEN
+		MOV ESI, EDX
+		MOV EDI, EAX
+		REP MOVSB
+		ADD EAX, LEN
+		POP ECX
+	LOOP CONT
+	POP EBP
+	RET 4
+@REPSTR@12 ENDP
+END
+
+; TODO: include EXTERN  lstrlenA@4: PROC
+; to dynamically determine LEN.
